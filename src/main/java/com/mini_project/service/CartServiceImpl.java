@@ -37,7 +37,6 @@ public class CartServiceImpl implements CartService{
                 .orElseThrow(() -> new RuntimeException("Cart not found for user: " + userId));
     }
 
-    // Create a new cart if the user doesn't have an active one
     public Cart createCart(String userId) {
         Optional<Cart> activeCart = cartRepository.findByUserIdAndCartStatus(userId, CartStatus.ACTIVE);
         if (activeCart.isPresent()) {
@@ -85,7 +84,6 @@ public class CartServiceImpl implements CartService{
             throw new RuntimeException("Cannot modify a non-active cart.");
         }
 
-        // Fetch product details
         ProductResponse productDetails = productResponseService.getProductDetails(productId).join();
 
         Optional<Cart.CartItem> existingItem = cart.getItems().stream()
@@ -98,6 +96,8 @@ public class CartServiceImpl implements CartService{
             Cart.CartItem newItem = new Cart.CartItem();
             newItem.setProductId(productId);
             newItem.setQuantity(quantity);
+            newItem.setUnitPrice(productDetails.getPrice());
+            newItem.setProductName(productDetails.getProductName());
             cart.getItems().add(newItem);
         }
 
@@ -119,10 +119,8 @@ public class CartServiceImpl implements CartService{
             throw new RuntimeException("Cannot modify a non-active cart.");
         }
 
-        // Remove the product from the cart
         cart.getItems().removeIf(item -> item.getProductId().equals(productId));
 
-        // Recalculate the total amount
         double totalAmount = calculateTotalAmount(cart);
         cart.setTotalAmount(totalAmount);
 
