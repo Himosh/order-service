@@ -1,8 +1,8 @@
-package com.mini_project.orderservice.controller;
+package com.mini_project.controller;
 
-import com.mini_project.orderservice.model.Cart;
-import com.mini_project.orderservice.model.Order;
-import com.mini_project.orderservice.service.OrderService;
+import com.mini_project.model.Cart;
+import com.mini_project.model.Order;
+import com.mini_project.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

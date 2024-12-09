@@ -1,7 +1,7 @@
-package com.mini_project.orderservice.service;
+package com.mini_project.service;
 
-import com.mini_project.orderservice.model.Cart;
-import com.mini_project.orderservice.model.Order;
+import com.mini_project.model.Cart;
+import com.mini_project.model.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -1,10 +1,7 @@
-package com.mini_project.orderservice.repository;
+package com.mini_project.repository;
 
-import com.mini_project.orderservice.model.Cart;
-import com.mini_project.orderservice.model.Order;
-import com.mini_project.orderservice.model.enums.CartStatus;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.mini_project.model.Cart;
+import com.mini_project.model.enums.CartStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -18,26 +18,20 @@ spring:
       hibernate:
         format_sql: true
 
-#  kafka:
-#    bootstrap-servers: localhost:9092
-#    producer:
-#      key-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-#    consumer:
-#      group-id: order-service-group
-#      auto-offset-reset: earliest
-#      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
-#      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
-#      properties:
-#        spring:
-#          json:
-#            trusted:
-#              packages: 'com.mini_project.orderservice.model.dto'
-#          deserializer:
-#            key.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
-#            value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
-#
-#
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: order-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: 'com.mini_project.model.dto'
 
 logging:
   level:

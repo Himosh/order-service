@@ -1,6 +1,6 @@
-package com.mini_project.orderservice.model;
+package com.mini_project.model;
 
-import com.mini_project.orderservice.model.enums.OrderStatus;
+import com.mini_project.model.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

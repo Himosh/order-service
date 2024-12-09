@@ -1,4 +1,4 @@
-package com.mini_project.orderservice.model.enums;
+package com.mini_project.model.enums;
 
 public enum CartStatus {
     ACTIVE,
