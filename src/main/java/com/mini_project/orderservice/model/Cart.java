@@ -35,7 +35,7 @@ public class Cart {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CartItem {
-        private String productId;
+        private Long productId;
         private Integer quantity;
         private Double unitPrice;
     }

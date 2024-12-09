@@ -1,6 +1,7 @@
 package com.mini_project.orderservice.service;
 
 import com.mini_project.orderservice.model.Cart;
+import com.mini_project.orderservice.model.dto.ProductResponse;
 import com.mini_project.orderservice.model.enums.CartStatus;
 import com.mini_project.orderservice.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ public class CartServiceImpl implements CartService{
 
     @Autowired
     private CartRepository cartRepository;
+
+    @Autowired
+    private ProductResponseService productResponseListener;
 
     @Override
     public List<Cart> getAllCarts() {
@@ -73,7 +77,7 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
-    public Cart addOrUpdateProduct(Long cartId, String productId, Integer quantity) {
+    public Cart addOrUpdateProduct(Long cartId, Long productId, Integer quantity) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
@@ -81,28 +85,30 @@ public class CartServiceImpl implements CartService{
             throw new RuntimeException("Cannot modify a non-active cart.");
         }
 
-        // Check if the product already exists in the cart
+        // Fetch product details
+        ProductResponse productDetails = productResponseListener.getProductDetails(productId).join();
+
         Optional<Cart.CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProductId().equals(productId))
                 .findFirst();
 
         if (existingItem.isPresent()) {
-            // Update quantity if the product exists
             existingItem.get().setQuantity(existingItem.get().getQuantity() + quantity);
         } else {
-            // Add the product if it doesn't exist
             Cart.CartItem newItem = new Cart.CartItem();
             newItem.setProductId(productId);
             newItem.setQuantity(quantity);
             cart.getItems().add(newItem);
         }
 
-        // Recalculate the total amount (assuming a `getProductPrice` method exists)
-        double totalAmount = calculateTotalAmount(cart);
-        cart.setTotalAmount(totalAmount);
+        // Update total amount
+        cart.setTotalAmount(cart.getItems().stream()
+                .mapToDouble(item -> productDetails.getPrice() * item.getQuantity())
+                .sum());
 
         return cartRepository.save(cart);
     }
+
 
     @Override
     public Cart removeProduct(Long cartId, String productId) {

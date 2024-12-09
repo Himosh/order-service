@@ -23,7 +23,7 @@ public class Order {
     private String userId;
 
     @ElementCollection
-    private List<String> productIds;
+    private List<Long> productIds;
 
     private Double totalAmount;
 
