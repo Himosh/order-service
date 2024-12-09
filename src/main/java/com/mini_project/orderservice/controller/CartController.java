@@ -58,7 +58,7 @@ public class CartController {
     @Operation(summary = "Add product to cart")
     public ResponseEntity<Cart> addProductToCart(
             @PathVariable Long cartId,
-            @RequestParam String productId,
+            @RequestParam Long productId,
             @RequestParam Integer quantity) {
         try {
             Cart updatedCart = cartService.addOrUpdateProduct(cartId, productId, quantity);
