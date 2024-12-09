@@ -1,9 +1,9 @@
-package com.mini_project.orderservice.service;
+package com.mini_project.service;
 
-import com.mini_project.orderservice.model.Cart;
-import com.mini_project.orderservice.model.dto.ProductResponse;
-import com.mini_project.orderservice.model.enums.CartStatus;
-import com.mini_project.orderservice.repository.CartRepository;
+import com.mini_project.model.Cart;
+import com.mini_project.model.dto.ProductResponse;
+import com.mini_project.model.enums.CartStatus;
+import com.mini_project.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class CartServiceImpl implements CartService{
     private CartRepository cartRepository;
 
     @Autowired
-    private ProductResponseService productResponseListener;
+    private ProductResponseService productResponseService;
 
     @Override
     public List<Cart> getAllCarts() {
@@ -86,7 +86,7 @@ public class CartServiceImpl implements CartService{
         }
 
         // Fetch product details
-        ProductResponse productDetails = productResponseListener.getProductDetails(productId).join();
+        ProductResponse productDetails = productResponseService.getProductDetails(productId).join();
 
         Optional<Cart.CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProductId().equals(productId))
