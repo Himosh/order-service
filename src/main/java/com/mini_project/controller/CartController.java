@@ -54,7 +54,7 @@ public class CartController {
         }
     }
 
-    @PatchMapping("/{cartId}/add")
+    @PatchMapping("/add-or-update/{cartId}")
     @Operation(summary = "Add product to cart")
     public ResponseEntity<Cart> addProductToCart(
             @PathVariable Long cartId,
@@ -80,5 +80,4 @@ public class CartController {
             throw new RuntimeException("Error removing product from cart: " + e.getMessage());
         }
     }
-
 }

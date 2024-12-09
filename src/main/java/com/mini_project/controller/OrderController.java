@@ -65,11 +65,11 @@ public class OrderController {
         }
     }
 
-    @PostMapping("/create")
+    @PostMapping("/create-order-from-cart/{cartId}")
     @Operation(summary = "Create order from cart")
-    public ResponseEntity<Order> createOrderFromCart(@RequestBody Cart cart) {
+    public ResponseEntity<Order> createOrderFromCart(@PathVariable Long cartId) {
         try {
-            Order order = orderService.createOrderFromCart(cart);
+            Order order = orderService.createOrderFromCart(cartId);
             return ResponseEntity.status(HttpStatus.CREATED).body(order);
         } catch (Exception e) {
             log.error("Error creating order", e);

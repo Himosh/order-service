@@ -8,6 +8,6 @@ import org.springframework.data.domain.Pageable;
 public interface OrderService {
     Page<Order> getAllOrders(Pageable pageable);
     Order getOrderById(Long orderId);
-    Order createOrderFromCart(Cart cart);
+    Order createOrderFromCart(Long CartId);
     Page<Order> getOrdersByUserId(String userId, Pageable pageable);
 }
