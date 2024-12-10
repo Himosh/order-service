@@ -6,6 +6,7 @@ import com.mini_project.model.enums.CartStatus;
 import com.mini_project.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class CartServiceImpl implements CartService{
     private CartRepository cartRepository;
 
     @Autowired
-    private ProductResponseService productResponseService;
+    private RestTemplate restTemplate;
 
     @Override
     public List<Cart> getAllCarts() {
@@ -77,6 +78,7 @@ public class CartServiceImpl implements CartService{
 
     @Override
     public Cart addOrUpdateProduct(Long cartId, Long productId, Integer quantity) {
+        // Retrieve the cart
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
@@ -84,30 +86,48 @@ public class CartServiceImpl implements CartService{
             throw new RuntimeException("Cannot modify a non-active cart.");
         }
 
-        ProductResponse productDetails = productResponseService.getProductDetails(productId).join();
+        // Fetch product details from the product service
+        ProductResponse productResponse;
+        try {
+            productResponse = restTemplate.getForObject(
+                    "http://localhost:8083/api/v1/products/" + productId, ProductResponse.class);
+            if (productResponse == null) {
+                throw new RuntimeException("Product not found.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching product details: " + e.getMessage(), e);
+        }
 
+        // Check if the product already exists in the cart
         Optional<Cart.CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProductId().equals(productId))
                 .findFirst();
 
         if (existingItem.isPresent()) {
-            existingItem.get().setQuantity(existingItem.get().getQuantity() + quantity);
+            // Update existing item
+            Cart.CartItem item = existingItem.get();
+            item.setQuantity(item.getQuantity() + quantity);
+            item.setUnitPrice(productResponse.getPrice());
+            item.setProductName(productResponse.getProductName());
         } else {
+            // Add new item
             Cart.CartItem newItem = new Cart.CartItem();
             newItem.setProductId(productId);
             newItem.setQuantity(quantity);
-            newItem.setUnitPrice(productDetails.getPrice());
-            newItem.setProductName(productDetails.getProductName());
+            newItem.setUnitPrice(productResponse.getPrice());
+            newItem.setProductName(productResponse.getProductName());
             cart.getItems().add(newItem);
         }
 
-        // Update total amount
+        // Recalculate total amount
         cart.setTotalAmount(cart.getItems().stream()
-                .mapToDouble(item -> productDetails.getPrice() * item.getQuantity())
+                .mapToDouble(item -> item.getUnitPrice() * item.getQuantity())
                 .sum());
 
+        // Save and return updated cart
         return cartRepository.save(cart);
     }
+
 
 
     @Override
