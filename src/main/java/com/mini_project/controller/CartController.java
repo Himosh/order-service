@@ -4,7 +4,6 @@ import com.mini_project.model.Cart;
 import com.mini_project.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,44 +13,42 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/cart")
-public class CartController {
+public class CartController extends AbstractBaseController {
 
-    @Autowired
-    private CartService cartService;
+    private final CartService cartService;
+
+    public CartController(CartService cartService) {
+        this.cartService = cartService;
+    }
 
     @GetMapping("/user")
     @Operation(summary = "Get cart by user ID")
     public ResponseEntity<Cart> getCartByUserId(@RequestParam String userId) {
-        try {
-            Cart cart = cartService.getCartByUserId(userId);
-            return ResponseEntity.ok(cart);
-        } catch (Exception e) {
-            throw new RuntimeException("Error retrieving cart: " + e.getMessage(), e);
-        }
+        return handleCustomResponse(
+                () -> cartService.getCartByUserId(userId),
+                HttpStatus.OK,
+                "Retrieving cart for userId: " + userId
+        );
     }
 
     @GetMapping("/all")
     @Operation(summary = "Get all carts")
     public ResponseEntity<List<Cart>> getAllCarts() {
-        try {
-            List<Cart> carts = cartService.getAllCarts();
-            return ResponseEntity.ok(carts);
-        } catch (Exception e) {
-//            log.error("Error retrieving carts", e);
-            throw new RuntimeException("Error retrieving carts: " + e.getMessage(), e);
-        }
+        return handleCustomResponse(
+                cartService::getAllCarts,
+                HttpStatus.OK,
+                "Retrieving all carts"
+        );
     }
 
-    @PostMapping("create-cart/{userId}")
+    @PostMapping("/create-cart/{userId}")
     @Operation(summary = "Create cart")
     public ResponseEntity<Cart> createCart(@PathVariable String userId) {
-        try {
-            Cart newCart = cartService.createCart(userId);
-            return new ResponseEntity<>(newCart, HttpStatus.CREATED);
-        } catch (Exception e) {
-            log.error("Error creating cart", e);
-            throw new RuntimeException("Error creating cart: " + e.getMessage(), e);
-        }
+        return handleCustomResponse(
+                () -> cartService.createCart(userId),
+                HttpStatus.CREATED,
+                "Creating a new cart for userId: " + userId
+        );
     }
 
     @PatchMapping("/add-or-update/{cartId}")
@@ -60,12 +57,11 @@ public class CartController {
             @PathVariable Long cartId,
             @RequestParam Long productId,
             @RequestParam Integer quantity) {
-        try {
-            Cart updatedCart = cartService.addOrUpdateProduct(cartId, productId, quantity);
-            return new ResponseEntity<>(updatedCart, HttpStatus.OK);
-        } catch (Exception e) {
-            throw new RuntimeException("Error adding product to cart: " + e.getMessage());
-        }
+        return handleCustomResponse(
+                () -> cartService.addOrUpdateProduct(cartId, productId, quantity),
+                HttpStatus.OK,
+                "Adding/updating product " + productId + " in cart " + cartId
+        );
     }
 
     @PatchMapping("/{cartId}/remove")
@@ -73,11 +69,10 @@ public class CartController {
     public ResponseEntity<Cart> removeProductFromCart(
             @PathVariable Long cartId,
             @RequestParam String productId) {
-        try {
-            Cart updatedCart = cartService.removeProduct(cartId, productId);
-            return new ResponseEntity<>(updatedCart, HttpStatus.OK);
-        } catch (Exception e) {
-            throw new RuntimeException("Error removing product from cart: " + e.getMessage());
-        }
+        return handleCustomResponse(
+                () -> cartService.removeProduct(cartId, productId),
+                HttpStatus.OK,
+                "Removing product " + productId + " from cart " + cartId
+        );
     }
 }
