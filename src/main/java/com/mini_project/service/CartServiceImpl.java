@@ -131,21 +131,27 @@ public class CartServiceImpl implements CartService{
 
 
     @Override
-    public Cart removeProduct(Long cartId, String productId) {
+    public Cart removeProduct(Long cartId, Long productId) {
+        // Find the cart by its ID, throw an exception if not found
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
-        if (!cart.getCartStatus().equals(CartStatus.ACTIVE)) {
+        // Check if the cart is active
+        if (!CartStatus.ACTIVE.equals(cart.getCartStatus())) {
             throw new RuntimeException("Cannot modify a non-active cart.");
         }
 
+        // Remove the product from the cart items
         cart.getItems().removeIf(item -> item.getProductId().equals(productId));
 
+        // Recalculate the total amount
         double totalAmount = calculateTotalAmount(cart);
         cart.setTotalAmount(totalAmount);
 
+        // Save and return the updated cart
         return cartRepository.save(cart);
     }
+
 
     private double calculateTotalAmount(Cart cart) {
         return cart.getItems().stream()

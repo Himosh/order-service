@@ -68,7 +68,7 @@ public class CartController extends AbstractBaseController {
     @Operation(summary = "Remove product from cart")
     public ResponseEntity<Cart> removeProductFromCart(
             @PathVariable Long cartId,
-            @RequestParam String productId) {
+            @RequestParam Long productId) {
         return handleCustomResponse(
                 () -> cartService.removeProduct(cartId, productId),
                 HttpStatus.OK,

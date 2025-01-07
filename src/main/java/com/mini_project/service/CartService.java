@@ -13,5 +13,5 @@ public interface CartService {
     void cancelCart(Long cartId);
     void clearCart(Long cartId);
     Cart addOrUpdateProduct(Long cartId, Long productId, Integer quantity);
-    Cart removeProduct(Long cartId, String productId);
+    Cart removeProduct(Long cartId, Long productId);
 }
